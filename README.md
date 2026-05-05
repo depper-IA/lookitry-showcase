@@ -11,43 +11,48 @@
 
 ## Executive Summary
 
-Lookitry is a scalable B2B SaaS platform providing an AI-driven virtual fitting room for retail e-commerce. The system is currently deployed and trusted by over 500 retail stores across Latin America, processing thousands of concurrent generation requests daily.
+Lookitry is a scalable B2B SaaS platform providing an AI-driven virtual fitting room for retail e-commerce. The system allows end-users to upload a selfie and visualize clothing items on themselves.
 
-The engineering focus of this project revolves around multi-tenant data isolation, high-availability AI pipelines, and frictionless integration via a zero-impact embeddable widget.
+The engineering focus of this project revolves around multi-tenant data isolation, self-hosted storage infrastructure, complex AI workflow orchestration, and frictionless integration via a zero-impact embeddable widget.
 
 ---
 
 ## Technical Architecture
 
-The platform architecture is designed to manage heavy asynchronous workloads while maintaining sub-second response times for the host applications.
+The platform architecture enforces a strict separation of concerns, ensuring that the frontend never interacts directly with AI models or database secrets.
 
 ### 1. Frontend & Client Integration
-* **Core Application:** Built on Next.js (App Router) and React 18, ensuring optimal Server-Side Rendering (SSR) and SEO performance for the main platform.
-* **Embeddable Widget:** A framework-agnostic, vanilla JavaScript script injected into client storefronts. 
-* **Performance Optimization:** Utilizes the Shadow DOM to guarantee strict CSS isolation, preventing style leakage into the host site. Assets are deferred to maintain a zero-impact footprint on the host's Core Web Vitals (Lighthouse).
+* **Core Application:** Built on Next.js 14 (App Router) and React 18 using TypeScript. Styled with Tailwind CSS under a custom Premium/Dark design system.
+* **Embeddable Integration:** Delivered to clients via a lightweight, vanilla JavaScript script (`/widget.js`) injected into storefronts, or through dynamic customizable mini-landing pages. 
+* **Performance:** Assets are deferred and isolated to maintain a zero-impact footprint on the host's Core Web Vitals.
 
-### 2. Backend & Infrastructure
-* **Infrastructure:** Deployed on highly optimized Virtual Private Servers (VPS) tuned for compute-intensive AI operations.
-* **Database Architecture:** PostgreSQL implemented with a strict multi-tenant schema. This isolates data, usage quotas, and analytics per retail store while allowing aggregated reporting for administrative oversight.
-* **API Gateway:** Node.js / Next.js API Routes expose RESTful endpoints consumed by the client widgets and third-party plugins.
+### 2. Backend API & Infrastructure
+* **API Gateway:** A robust Node.js / Express backend written in TypeScript. It acts as a secure proxy that orchestrates payments, handles custom JWT authentication, and dispatches AI jobs.
+* **Rate Limiting & Security:** Cloudflare Turnstile integrated natively to prevent spam and abuse.
+* **Database:** Supabase (PostgreSQL) utilizing Service Role keys at the backend level for secure, bypassed RLS data management.
+* **Storage Infrastructure:** Self-hosted **MinIO** storage clusters, handling ephemeral storage of user images and generation outputs.
 
-### 3. AI Processing Pipeline
-* **Processing Engine:** Custom image processing pipeline integrating Google Cloud Vertex AI infrastructure.
-* **Queue Management:** Implemented a robust asynchronous message queuing system to handle traffic spikes, manage API rate limits, and prevent timeout failures during high-demand periods.
-* **Data Security:** Strict adherence to data privacy protocols. Ephemeral storage is utilized for user-uploaded images, which are processed in memory and immediately purged upon task completion.
+### 3. AI Processing & Workflow Orchestration
+* **Workflow Engine:** **n8n** is deployed as the central orchestrator, managing complex logic for image generation, inpainting, and MinIO insertion.
+* **AI Inference:** Integrated with **OpenRouter** and custom GPU workers (`idm-vton-api`) handling the heavy lifting of Virtual Try-On generation.
+* **Asynchronous Communication:** n8n communicates back to the Node.js backend via secure webhooks once asynchronous image processing is completed.
+
+### 4. Billing & Subscriptions
+* **Dual Gateway System:** Integrated with **Wompi** for local currency processing (COP) and **PayPal** for international processing (USD).
+* **Automated Logic:** Includes dynamic currency conversion based on configurable exchange rates (TRM) and automated prorated billing for subscription upgrades.
 
 ---
 
 ## Key Engineering Challenges Solved
 
-### 1. Multi-Tenant Scalability
-Designing a centralized system capable of handling 500+ independent stores required a robust authentication and routing mechanism. Each tenant operates under unique API scopes and strict quota limits, enforced at the API Gateway level to prevent noisy-neighbor issues.
+### 1. Secure AI Orchestration
+To prevent frontend exploitation of expensive AI generation endpoints, all requests are securely marshaled through the Express backend, validated via custom JWT, and offloaded to n8n. This decoupling ensures the AI models and the core database are completely air-gapped from public access.
 
-### 2. Seamless E-commerce Integration
-To reduce onboarding friction, a native WooCommerce Plugin was developed. This integration automates catalog synchronization and dynamically injects the fitting room widget into the Product Detail Pages (PDP) without requiring technical intervention from the store owner.
+### 2. Self-Hosted High-Volume Storage
+Instead of relying on costly managed storage for millions of temporary generations, a self-hosted MinIO cluster was implemented. This drastically reduced cloud storage costs while maintaining S3-compatible APIs for seamless backend integration.
 
-### 3. Tier-Based Subscription Lifecycle
-Engineered an automated billing and provisioning lifecycle integrated with localized payment gateways (Wompi, PSE, Nequi). The system handles downgrades, upgrades, and automated teardown of services based on real-time webhook events.
+### 3. Conflict-Free E-commerce Embedding
+The client-facing widget was engineered to avoid CSS/JS collisions with the infinite variety of themes and frameworks used by client stores.
 
 ---
 
@@ -55,12 +60,12 @@ Engineered an automated billing and provisioning lifecycle integrated with local
 
 <div align="center">
   <img src="https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js" />
-  <img src="https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB" alt="React" />
+  <img src="https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white" alt="Express" />
   <img src="https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Node.js-43853D?style=flat-square&logo=node.js&logoColor=white" alt="Node.js" />
-  <img src="https://img.shields.io/badge/PostgreSQL-316192?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL" />
-  <img src="https://img.shields.io/badge/Vertex_AI-4285F4?style=flat-square&logo=google-cloud&logoColor=white" alt="Vertex AI" />
-  <img src="https://img.shields.io/badge/VPS-673AB7?style=flat-square&logo=hostinger&logoColor=white" alt="VPS" />
+  <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white" alt="Supabase" />
+  <img src="https://img.shields.io/badge/n8n-EA4B71?style=flat-square&logo=n8n&logoColor=white" alt="n8n" />
+  <img src="https://img.shields.io/badge/MinIO-C7202C?style=flat-square&logo=minio&logoColor=white" alt="MinIO" />
 </div>
 
 <br/>
