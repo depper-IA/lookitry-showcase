@@ -1,4 +1,5 @@
 <div align="center">
+  <img src="https://lookitry.com/logo.svg" alt="Lookitry Logo" height="80"/>
   <h1>Lookitry | Architecture & Engineering Showcase</h1>
   <h3>High-Concurrency B2B SaaS Platform</h3>
   
