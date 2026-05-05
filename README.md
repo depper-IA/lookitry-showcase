@@ -1,62 +1,57 @@
 <div align="center">
-  <h1>Lookitry - AI Virtual Fitting Room (Architecture Showcase)</h1>
-  <h3>High-Performance B2B SaaS Architecture</h3>
+  <h1>Lookitry | Architecture & Engineering Showcase</h1>
+  <h3>High-Concurrency B2B SaaS Platform</h3>
   
   <p>
-    <i>This is a public showcase repository demonstrating the architecture and technical challenges solved while building <a href="https://lookitry.com">Lookitry.com</a>. The core source code, proprietary algorithms, and business logic remain strictly private.</i>
+    <i>A technical overview demonstrating the architecture, infrastructure, and engineering challenges resolved during the development of <a href="https://lookitry.com">Lookitry.com</a>. Proprietary source code and core algorithms remain strictly confidential.</i>
   </p>
 </div>
 
 <br/>
 
-## 📌 Overview
+## Executive Summary
 
-**Lookitry** is a scalable B2B SaaS platform that empowers retail stores with an AI-driven virtual fitting room. It allows end-users to visualize clothing items on themselves before purchasing, significantly reducing return rates and increasing conversion for e-commerce brands.
+Lookitry is a scalable B2B SaaS platform providing an AI-driven virtual fitting room for retail e-commerce. The system is currently deployed and trusted by over 500 retail stores across Latin America, processing thousands of concurrent generation requests daily.
 
-Currently trusted by **500+ retail stores** across Colombia and Latin America.
+The engineering focus of this project revolves around multi-tenant data isolation, high-availability AI pipelines, and frictionless integration via a zero-impact embeddable widget.
 
 ---
 
-## 🏗️ Technical Architecture
+## Technical Architecture
 
-The system is designed to handle high concurrency, processing thousands of AI image generations daily across hundreds of e-commerce tenants without latency bottlenecks.
+The platform architecture is designed to manage heavy asynchronous workloads while maintaining sub-second response times for the host applications.
 
-### 1. Frontend Architecture
-* **Framework:** Next.js (App Router) + React 18
-* **Styling:** Tailwind CSS + custom UI components.
-* **Embeddable Widgets:** A lightweight, vanilla JS script injected into client websites. Designed to have **zero impact** on the host site's Lighthouse performance score (using Shadow DOM and deferred loading).
-* **State Management:** Optimized for fast rendering and asynchronous polling while the AI processes heavy requests.
+### 1. Frontend & Client Integration
+* **Core Application:** Built on Next.js (App Router) and React 18, ensuring optimal Server-Side Rendering (SSR) and SEO performance for the main platform.
+* **Embeddable Widget:** A framework-agnostic, vanilla JavaScript script injected into client storefronts. 
+* **Performance Optimization:** Utilizes the Shadow DOM to guarantee strict CSS isolation, preventing style leakage into the host site. Assets are deferred to maintain a zero-impact footprint on the host's Core Web Vitals (Lighthouse).
 
 ### 2. Backend & Infrastructure
-* **Environment:** Hosted on dedicated VPS infrastructure optimized for compute-heavy workloads.
-* **Database:** PostgreSQL (structured for multi-tenancy, isolating data, quotas, and analytics per store).
-* **API Layer:** Node.js / Next.js API Routes serving REST endpoints for client widgets and external plugins.
-* **Automation & Webhooks:** Automated internal microservices orchestration, subscription management, and asynchronous task queues.
+* **Infrastructure:** Deployed on highly optimized Virtual Private Servers (VPS) tuned for compute-intensive AI operations.
+* **Database Architecture:** PostgreSQL implemented with a strict multi-tenant schema. This isolates data, usage quotas, and analytics per retail store while allowing aggregated reporting for administrative oversight.
+* **API Gateway:** Node.js / Next.js API Routes expose RESTful endpoints consumed by the client widgets and third-party plugins.
 
-### 3. AI Processing Pipeline (Abstracted)
-* **Core Engine:** Custom AI pipeline integrated with Google Cloud (Vertex AI) for robust, scalable image processing.
-* **Queue System:** AI generation requests are handled via a robust queuing mechanism to prevent timeout failures and manage API rate limits efficiently under heavy load.
-* **Security & Privacy:** Ephemeral storage processing ensuring user data (uploaded images) is securely handled, processed, and immediately purged according to strict privacy standards.
-
----
-
-## 🚀 Technical Challenges Solved
-
-### Multi-Tenant Scalability
-Managing 500+ distinct e-commerce stores required a strict multi-tenant database design. Each store generates unique API keys and scopes, ensuring complete data isolation while allowing aggregated platform-wide analytics.
-
-### Third-Party Integrations (WooCommerce)
-Developed a native **WooCommerce Plugin** that allows stores to integrate the Virtual Fitting Room with a single click. The plugin syncs product catalogs asynchronously and injects the widget directly into the product detail pages (PDP).
-
-### Zero-Friction Embebding
-The client-facing widget was engineered to be ultra-lightweight and conflict-free. It uses Shadow DOM to completely isolate CSS, ensuring that the widget's styles never clash with the host website's theme, regardless of their tech stack.
-
-### Tier-based Subscription Engine
-Implemented secure, localized payment gateways handling tier-based subscriptions (Basic, Pro, Enterprise) with automated provisioning, usage quotas, and teardown of services.
+### 3. AI Processing Pipeline
+* **Processing Engine:** Custom image processing pipeline integrating Google Cloud Vertex AI infrastructure.
+* **Queue Management:** Implemented a robust asynchronous message queuing system to handle traffic spikes, manage API rate limits, and prevent timeout failures during high-demand periods.
+* **Data Security:** Strict adherence to data privacy protocols. Ephemeral storage is utilized for user-uploaded images, which are processed in memory and immediately purged upon task completion.
 
 ---
 
-## 🛠️ Tech Stack Summary
+## Key Engineering Challenges Solved
+
+### 1. Multi-Tenant Scalability
+Designing a centralized system capable of handling 500+ independent stores required a robust authentication and routing mechanism. Each tenant operates under unique API scopes and strict quota limits, enforced at the API Gateway level to prevent noisy-neighbor issues.
+
+### 2. Seamless E-commerce Integration
+To reduce onboarding friction, a native WooCommerce Plugin was developed. This integration automates catalog synchronization and dynamically injects the fitting room widget into the Product Detail Pages (PDP) without requiring technical intervention from the store owner.
+
+### 3. Tier-Based Subscription Lifecycle
+Engineered an automated billing and provisioning lifecycle integrated with localized payment gateways (Wompi, PSE, Nequi). The system handles downgrades, upgrades, and automated teardown of services based on real-time webhook events.
+
+---
+
+## Technology Stack
 
 <div align="center">
   <img src="https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js" />
@@ -71,4 +66,4 @@ Implemented secure, localized payment gateways handling tier-based subscriptions
 <br/>
 
 ---
-*Created by **[Sam Wilkie](https://sam.wilkiedevs.com)** - Full Stack Developer & System Architect.*
+*Maintained by [Sam Wilkie](https://sam.wilkiedevs.com) - Full Stack Developer & System Architect.*
